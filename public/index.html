@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Drik Panchanga Calculator</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ffa726 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+      }
+
+      .form-section {
+        padding: 40px;
+        background: #f8f9fa;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-group label {
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .form-group input {
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .calculate-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        font-size: 18px;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+        width: 100%;
+      }
+
+      .calculate-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+      }
+
+      .calculate-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .results-section {
+        padding: 40px;
+        display: none;
+      }
+
+      .results-section.show {
+        display: block;
+      }
+
+      .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+      }
+
+      .result-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        border-left: 4px solid #667eea;
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+
+      .result-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .result-card h3 {
+        color: #333;
+        margin-bottom: 15px;
+        font-size: 1.3rem;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 10px;
+      }
+
+      .result-item {
+        margin-bottom: 12px;
+        padding: 8px 0;
+      }
+
+      .result-label {
+        font-weight: 600;
+        color: #555;
+        display: inline-block;
+        min-width: 80px;
+      }
+
+      .result-value {
+        color: #333;
+        font-weight: 500;
+      }
+
+      .error-message {
+        background: #fee;
+        color: #c33;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+        border-left: 4px solid #c33;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+      }
+
+      .loading::after {
+        content: '';
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-left: 10px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .vaara-names {
+        display: inline-block;
+        margin-left: 10px;
+        color: #667eea;
+        font-weight: 500;
+      }
+
+      .time-info {
+        background: #f8f9fa;
+        padding: 8px 12px;
+        border-radius: 6px;
+        margin-top: 8px;
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .form-section,
+        .results-section {
+          padding: 20px;
+        }
+
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🕉️ Drik Panchanga Calculator</h1>
+        <p>Hindu Luni-Solar Calendar Calculations</p>
+      </div>
+
+      <div class="form-section">
+        <form id="panchangaForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="date">Date:</label>
+              <input type="date" id="date" name="date" required />
+            </div>
+            <div class="form-group">
+              <label for="latitude">Latitude:</label>
+              <input
+                type="number"
+                id="latitude"
+                name="latitude"
+                step="0.0001"
+                placeholder="e.g., 28.6139"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="longitude">Longitude:</label>
+              <input
+                type="number"
+                id="longitude"
+                name="longitude"
+                step="0.0001"
+                placeholder="e.g., 77.2090"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="timezone">Timezone (hours from UTC):</label>
+              <input
+                type="number"
+                id="timezone"
+                name="timezone"
+                step="0.5"
+                placeholder="e.g., 5.5"
+                required
+              />
+            </div>
+          </div>
+          <button type="submit" class="calculate-btn" id="calculateBtn">
+            Calculate Panchanga
+          </button>
+        </form>
+      </div>
+
+      <div class="results-section" id="resultsSection">
+        <div id="loadingMessage" class="loading">Calculating Panchanga...</div>
+        <div
+          id="errorMessage"
+          class="error-message"
+          style="display: none"
+        ></div>
+        <div id="resultsContent" class="results-grid"></div>
+      </div>
+    </div>
+
+    <script>
+      // Dynamically determine the API base URL based on current location
+      const API_BASE_URL = `${window.location.origin}/panchanga`;
+
+      const vaaraNames = [
+        'Sunday (Ravivaar)',
+        'Monday (Somvaar)',
+        'Tuesday (Mangalvaar)',
+        'Wednesday (Budhvaar)',
+        'Thursday (Guruvaar)',
+        'Friday (Shukravaar)',
+        'Saturday (Shanivaar)',
+      ];
+
+      const tithiNames = [
+        'Pratipad',
+        'Dwitiya',
+        'Tritiya',
+        'Chaturthi',
+        'Panchami',
+        'Shashthi',
+        'Saptami',
+        'Ashtami',
+        'Navami',
+        'Dashami',
+        'Ekadashi',
+        'Dwadashi',
+        'Trayodashi',
+        'Chaturdashi',
+        'Purnima/Amavasya',
+      ];
+
+      const nakshatraNames = [
+        'Ashwini',
+        'Bharani',
+        'Krittika',
+        'Rohini',
+        'Mrigashira',
+        'Ardra',
+        'Punarvasu',
+        'Pushya',
+        'Ashlesha',
+        'Magha',
+        'Purva Phalguni',
+        'Uttara Phalguni',
+        'Hasta',
+        'Chitra',
+        'Swati',
+        'Vishakha',
+        'Anuradha',
+        'Jyeshtha',
+        'Mula',
+        'Purva Ashadha',
+        'Uttara Ashadha',
+        'Shravana',
+        'Dhanishta',
+        'Shatabhisha',
+        'Purva Bhadrapada',
+        'Uttara Bhadrapada',
+        'Revati',
+      ];
+
+      const yogaNames = [
+        'Vishkumbha',
+        'Preeti',
+        'Ayushman',
+        'Saubhagya',
+        'Shobhana',
+        'Atiganda',
+        'Sukarman',
+        'Dhriti',
+        'Shula',
+        'Ganda',
+        'Vriddhi',
+        'Dhruva',
+        'Vyaghata',
+        'Harshana',
+        'Vajra',
+        'Siddhi',
+        'Vyatipata',
+        'Variyana',
+        'Parigha',
+        'Shiva',
+        'Siddha',
+        'Sadhya',
+        'Shubha',
+        'Shukla',
+        'Brahma',
+        'Indra',
+        'Vaidhriti',
+      ];
+
+      const masaNames = [
+        'Chaitra',
+        'Vaishakha',
+        'Jyeshtha',
+        'Ashadha',
+        'Shravana',
+        'Bhadrapada',
+        'Ashwina',
+        'Kartika',
+        'Margashirsha',
+        'Pausha',
+        'Magha',
+        'Phalguna',
+      ];
+
+      // Set default values
+      document.addEventListener('DOMContentLoaded', function () {
+        // Set today's date
+        const today = new Date();
+        document.getElementById('date').value = today
+          .toISOString()
+          .split('T')[0];
+
+        // Set default location (Delhi, India)
+        document.getElementById('latitude').value = '28.6139';
+        document.getElementById('longitude').value = '77.2090';
+        document.getElementById('timezone').value = '5.5';
+      });
+
+      document
+        .getElementById('panchangaForm')
+        .addEventListener('submit', async function (e) {
+          e.preventDefault();
+
+          const formData = new FormData(e.target);
+          const dateValue = formData.get('date');
+          const [year, month, day] = dateValue.split('-').map(Number);
+
+          const params = {
+            year,
+            month,
+            day,
+            latitude: parseFloat(formData.get('latitude')),
+            longitude: parseFloat(formData.get('longitude')),
+            timezone: parseFloat(formData.get('timezone')),
+          };
+
+          await calculatePanchanga(params);
+        });
+
+      async function calculatePanchanga(params) {
+        const resultsSection = document.getElementById('resultsSection');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const resultsContent = document.getElementById('resultsContent');
+        const calculateBtn = document.getElementById('calculateBtn');
+
+        // Show loading state
+        resultsSection.classList.add('show');
+        loadingMessage.style.display = 'block';
+        errorMessage.style.display = 'none';
+        resultsContent.innerHTML = '';
+        calculateBtn.disabled = true;
+
+        try {
+          const queryString = new URLSearchParams(params).toString();
+          const response = await fetch(`${API_BASE_URL}?${queryString}`);
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          displayResults(data);
+        } catch (error) {
+          console.error('Error calculating panchanga:', error);
+          showError(
+            'Failed to calculate Panchanga. Please check your inputs and try again. ' +
+              error.message,
+          );
+        } finally {
+          loadingMessage.style.display = 'none';
+          calculateBtn.disabled = false;
+        }
+      }
+
+      function displayResults(data) {
+        const resultsContent = document.getElementById('resultsContent');
+
+        const html = `
+                <div class="result-card">
+                    <h3>📅 Date & Location</h3>
+                    <div class="result-item">
+                        <span class="result-label">Date:</span>
+                        <span class="result-value">${data.date.day}/${data.date.month}/${data.date.year}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Location:</span>
+                        <span class="result-value">${data.location.latitude}°N, ${data.location.longitude}°E</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Timezone:</span>
+                        <span class="result-value">UTC ${data.location.timezone >= 0 ? '+' : ''}${data.location.timezone}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Vaara:</span>
+                        <span class="result-value">${data.vaara}</span>
+                        <span class="vaara-names">(${vaaraNames[data.vaara] || 'Unknown'})</span>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <h3>🌙 Tithi</h3>
+                    ${
+                      data.tithi
+                        ? data.tithi
+                            .map(
+                              (t, index) => `
+                        <div class="result-item">
+                            <span class="result-label">${index === 0 ? 'Current:' : 'Next:'}</span>
+                            <span class="result-value">${t.name || tithiNames[t.number - 1] || t.number}</span>
+                            ${t.endTime ? `<div class="time-info">Ends: ${formatTime(t.endTime)}</div>` : ''}
+                        </div>
+                    `,
+                            )
+                            .join('')
+                        : '<div class="result-item"><span class="result-value">No tithi data</span></div>'
+                    }
+                </div>
+
+                <div class="result-card">
+                    <h3>⭐ Nakshatra</h3>
+                    ${
+                      data.nakshatra
+                        ? data.nakshatra
+                            .map(
+                              (n, index) => `
+                        <div class="result-item">
+                            <span class="result-label">${index === 0 ? 'Current:' : 'Next:'}</span>
+                            <span class="result-value">${n.name || nakshatraNames[n.number - 1] || n.number}</span>
+                            ${n.endTime ? `<div class="time-info">Ends: ${formatTime(n.endTime)}</div>` : ''}
+                        </div>
+                    `,
+                            )
+                            .join('')
+                        : '<div class="result-item"><span class="result-value">No nakshatra data</span></div>'
+                    }
+                </div>
+
+                <div class="result-card">
+                    <h3>🧘 Yoga</h3>
+                    ${
+                      data.yoga
+                        ? data.yoga
+                            .map(
+                              (y, index) => `
+                        <div class="result-item">
+                            <span class="result-label">${index === 0 ? 'Current:' : 'Next:'}</span>
+                            <span class="result-value">${y.name || yogaNames[y.number - 1] || y.number}</span>
+                            ${y.endTime ? `<div class="time-info">Ends: ${formatTime(y.endTime)}</div>` : ''}
+                        </div>
+                    `,
+                            )
+                            .join('')
+                        : '<div class="result-item"><span class="result-value">No yoga data</span></div>'
+                    }
+                </div>
+
+                <div class="result-card">
+                    <h3>🔱 Karana</h3>
+                    <div class="result-item">
+                        <span class="result-label">Current:</span>
+                        <span class="result-value">${data.karana ? data.karana.name || data.karana.number : 'No karana data'}</span>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <h3>📆 Masa (Month)</h3>
+                    <div class="result-item">
+                        <span class="result-label">Current:</span>
+                        <span class="result-value">${data.masa ? data.masa.name || masaNames[data.masa.number - 1] || data.masa.number : 'No masa data'}</span>
+                        ${data.masa && data.masa.isAdhika ? '<span class="vaara-names">(Adhika Masa)</span>' : ''}
+                    </div>
+                </div>
+            `;
+
+        resultsContent.innerHTML = html;
+      }
+
+      function formatTime(timeArray) {
+        if (!Array.isArray(timeArray) || timeArray.length < 3) {
+          return 'Invalid time';
+        }
+
+        const [hours, minutes, seconds] = timeArray;
+        const h = Math.floor(hours);
+        const m = Math.floor(minutes);
+        const s = Math.floor(seconds);
+
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+      }
+
+      function showError(message) {
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.textContent = message;
+        errorMessage.style.display = 'block';
+      }
+    </script>
+  </body>
+</html>
