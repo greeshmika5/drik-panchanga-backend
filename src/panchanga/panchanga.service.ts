@@ -765,8 +765,10 @@ public findMatchingDates(
   const basePaksha = basePanchanga.tithi[0].paksha;
   const baseMasa = basePanchanga.masa.number;
 
-  const startYear = baseDate.year - range;
-  const endYear = baseDate.year + range;
+  // Use current year as base for range calculation, not the user's selected date
+  const currentYear = new Date().getFullYear();
+  const startYear = currentYear - range;
+  const endYear = currentYear + range;
 
   for (let year = startYear; year <= endYear; year++) {
     let foundInYear = false;
@@ -922,10 +924,7 @@ public findMatchingDates(
   });
 
   return matches;
-}
-
-
-
+  }
 
   // public async findMatchingDatesForRange(
   //   tithi: number,
